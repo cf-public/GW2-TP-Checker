@@ -1,0 +1,12 @@
+html {
+    background-color: white;
+    font-family: "Arial", Arial, serif;
+    font-size: 15px;
+    color: black;
+}
+th{
+    text-align: left;
+}
+.coins{
+    text-align: right;
+}
