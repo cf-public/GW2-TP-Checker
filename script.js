@@ -72,7 +72,6 @@ function check(orders){
 function getOrders(){
      fetch("https://api.guildwars2.com/v2/commerce/transactions/current/buys?access_token="+apiKey).then((response)=>response.json())
     .then((orders)=>check(orders)).catch(e=>console.log(e));
-    setInterval(getOrders, 1000 * 60); // 1000ms * 60
 }
 
 
@@ -80,6 +79,6 @@ if (apiKey==0){ // check the api key
     bodyHandler.innerHTML= "Please add an api key in the script.js file";
 }
 else{
-    getOrders();
+    setInterval(getOrders, 1000 * 60); // 1000ms * 60;
 }
 
