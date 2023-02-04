@@ -79,6 +79,7 @@ if (apiKey==0){ // check the api key
     bodyHandler.innerHTML= "Please add an api key in the script.js file";
 }
 else{
+    getOrders();
     setInterval(getOrders, 1000 * 60); // 1000ms * 60;
 }
 
