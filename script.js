@@ -77,7 +77,7 @@ function getOrders(){
 
 
 if (apiKey==0){ // check the api key
-    body.innerHTML= "Please add an api key in the script.js file";
+    bodyHandler.innerHTML= "Please add an api key in the script.js file";
 }
 else{
     getOrders();
