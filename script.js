@@ -1,65 +1,54 @@
 apiKey = 0 // remove api key before commit
 
-bodyHandler = document.querySelector("body");
+const bodyHandler = document.querySelector("body");
 
 function getPrices(orders){
     // query the api for the prices
-    url = "https://api.guildwars2.com/v2/commerce/prices?ids=";
-    for (item of orders){
-        url = url + item['item_id'] + ",";
-    }
-    prices = fetch(url).then((response)=>response.json()).catch(e=>console.log(e));
-    return prices
+    let url = "https://api.guildwars2.com/v2/commerce/prices?ids=";
+    url = url + orders.map(order=>order['item_id']).join(",");
+    let prices = fetch(url).then((response)=>response.json()).catch(e=>console.log(e));
+    return prices;
 }
 
 function getNames(orders){
     // query the names
-    url = "https://api.guildwars2.com/v2/items?ids=";
-    for (item of orders){
-        url = url + item['item_id'] + ",";
-    }
-    names = fetch(url).then((response)=>response.json()).catch(e=>consolWe.log(e));
+    let url = "https://api.guildwars2.com/v2/items?ids=";
+    url = url + orders.map(order=>order['item_id']).join(",");
+    let names = fetch(url).then((response)=>response.json()).catch(e=>consolWe.log(e));
     return names;
 }
 
 function coinsToReadable(coins){
     // converts coins to gold, silver and copper
-    copper = coins%100
-    silver = ((coins - copper)%10000)/100
-    gold = (coins - silver*100 - copper)/10000
+    let copper = coins%100;
+    let silver = ((coins - copper)%10000)/100;
+    let gold = (coins - silver*100 - copper)/10000;
     
     // format it nicely
-    g = `${gold}g`
-    s = `${silver}s`
-    c = `${copper}c`
-    if (silver<10){
-        s = "0"+s
-    }
-    if (copper<10){
-        c = "0"+c
-    }
-
-
-    return g+s+c
+    let g = `${gold}g`;
+    let s = silver<10 ? `0${silver}s`:`${silver}s`;
+    let c = copper<10 ? `0${copper}c`:`${copper}c`;
+    return g+s+c;
 }
+
 function check(orders){
-    pricesPromise = getPrices(orders);
-    namesPromise = getNames(orders);
+    let pricesPromise = getPrices(orders);
+    let namesPromise = getNames(orders);
 
     Promise.all([pricesPromise, namesPromise]).then((data)=>{
-        prices = data[0];
-        names = data[1];
+        let prices = data[0];
+        let names = data[1];
         // output = "Orders that are currently overbid : <br/>";
-        output =
+        let output =
         `<table>
         <tr>
             <th>Name</th><th>My Order</th><th>Highest Order</th>
         </tr>`;
         for (order of orders){
-            my_price = order["price"];
-            current_price = prices.filter(item=>{return (item['id'] == order['item_id']) })[0]['buys']['unit_price'];
+            let my_price = order["price"];
+            let current_price = prices.filter(item=>{return (item['id'] == order['item_id']) })[0]['buys']['unit_price'];
             if (my_price < current_price){
-                item_name = names.filter(name=>{return (name['id'] == order['item_id']) })[0]['name'];
+                let item_name = names.filter(name=>{return (name['id'] == order['item_id']) })[0]['name'];
                 // output = output + item_name + coinsToReadable(order['price']) +"<br/>";
                 output = output + `<tr><td>${item_name}</td> <td class='coins'>${coinsToReadable(order['price'])}</td> <td class='coins'>${coinsToReadable(current_price)}</td></tr>`
             }
@@ -70,7 +59,7 @@ function check(orders){
 }
 
 function getOrders(){
-     fetch("https://api.guildwars2.com/v2/commerce/transactions/current/buys?access_token="+apiKey).then((response)=>response.json())
+    fetch("https://api.guildwars2.com/v2/commerce/transactions/current/buys?access_token="+apiKey).then((response)=>response.json())
     .then((orders)=>check(orders)).catch(e=>console.log(e));
 }
 
@@ -82,4 +71,3 @@ else{
     getOrders();
     setInterval(getOrders, 1000 * 60); // 1000ms * 60;
 }
-
